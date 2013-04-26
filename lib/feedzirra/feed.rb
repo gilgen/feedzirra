@@ -296,12 +296,12 @@ module Feedzirra
               responses[url] = feed
               options[:on_success].call(url, feed) if options.has_key?(:on_success)
             rescue Exception => e
-              ap "Exception caught: #{e}"
-              ap e.backtrace
+              Rails.logger.ap "Exception caught: #{e}"
+              Rails.logger.ap e.backtrace
               options[:on_failure].call(url, c.response_code, c.header_str, c.body_str) if options.has_key?(:on_failure)
             end
           else
-            ap "Error determining parser for #{url} - #{c.last_effective_url}"
+            Rails.logger.ap "Error determining parser for #{url} - #{c.last_effective_url}"
             # raise NoParserAvailable.new("no valid parser for content.") (this would unfortunately fail the whole 'multi', so it's not really usable)
             options[:on_failure].call(url, c.response_code, c.header_str, c.body_str) if options.has_key?(:on_failure)
           end
@@ -315,7 +315,7 @@ module Feedzirra
           responses[url] = c.response_code
           if c.response_code == 404 && options.has_key?(:on_failure)
             options[:on_failure].call(url, c.response_code, c.header_str, c.body_str)
-            ap "aw jeez, we 404d"
+            Rails.logger.ap "aw jeez, we 404d"
           end
           options[:on_complete].call(url) if options.has_key?(:on_complete)
         end
@@ -327,7 +327,7 @@ module Feedzirra
             options[:on_success].call(url, nil) if options.has_key?(:on_success)
           else
             options[:on_failure].call(url, c.response_code, c.header_str, c.body_str) if options.has_key?(:on_failure)
-            ap err
+            Rails.logger.ap err
           end
         end
       end
@@ -367,8 +367,8 @@ module Feedzirra
             responses[feed.feed_url] = feed
             options[:on_success].call(feed) if options.has_key?(:on_success)
           rescue Exception => e
-            ap "Exception in add_feed_to_multi: #{e}"
-            ap e.backtrace
+            Rails.logger.ap "Exception in add_feed_to_multi: #{e}"
+            Rails.logger.ap e.backtrace
             options[:on_failure].call(feed, c.response_code, c.header_str, c.body_str) if options.has_key?(:on_failure)
           end
         end
@@ -384,7 +384,7 @@ module Feedzirra
             responses[feed.feed_url] = feed
             options[:on_success].call(feed) if options.has_key?(:on_success)
           else
-            ap err
+            Rails.logger.ap err
             responses[feed.url] = c.response_code
             options[:on_failure].call(feed, c.response_code, c.header_str, c.body_str) if options.has_key?(:on_failure)
           end
